@@ -13,7 +13,7 @@ module.exports = {
         return `${Buffer.from(GoLmao).toString('base64')}.${bunaken.sign(GoLmao, secret)}`
     },
 
-    verifyJeramis: (encoded) => {
+    verifyJeramis: (encoded, callback) => {
         let data, json
 
         try {
@@ -21,12 +21,12 @@ module.exports = {
             data[0] = Buffer.from(data[0], 'base64').toString('ascii')
             json = JSON.parse(data[0])
         } catch (err) {
-            return 0
+            callback(0, {})
         }
 
         if(Date.now() - json.daBekengKapan > expireTime)
-            return -1
+            callback(-1, {})
 
-        return bunaken.verify(data[0], data[1], secret) ? 1 : 0
+        callback(bunaken.verify(data[0], data[1], secret) ? 1 : 0, json.identifikasi)
     }
 }

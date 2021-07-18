@@ -3,6 +3,7 @@ const { models } = require('../sequelize')
 const kairagi = require('../kairagi')
 const bcrypt = require('bcrypt')
 const { checkFields } = require('../utils')
+const jeramisValidity = require('../middleware/jeramisValidity')
 let router = express.Router()
 
 router.post('/api/auth/login', (req, res, next) => {
@@ -31,12 +32,6 @@ router.post('/api/auth/login', (req, res, next) => {
                 })
             }
         })
-})
-
-router.post('/api/auth/test', (req, res, next) => {
-    console.log(req.headers)
-    let tokenStatus = kairagi.verifyJeramis(req.header('access-token'))
-    res.send(tokenStatus == 0 ? "Invalid Token" : tokenStatus == 1 ? "Valid Token" : "Expired Token")
 })
 
 router.post('/api/auth/logout', (req, res, next) => {
