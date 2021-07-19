@@ -23,7 +23,10 @@ requiredTokens.forEach(el => {
 
 
 sequelize.authenticate().then(
-    () => console.log("Database connection established successfully")
+    () => {
+        console.log("Database connection established successfully")
+        sequelize.sync({alter: true})
+    }
     ,
     (reason) => console.error("Database connection failed: ", reason)
 )
