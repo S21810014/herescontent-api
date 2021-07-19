@@ -1,11 +1,11 @@
 const express = require('express')
 const { models } = require('../sequelize')
-const { checkKeys, checkFields, errorFormatter } = require('../utils')
+const { checkFields, errorFormatter } = require('../utils')
 const bcrypt = require('bcrypt')
 const jeramisValidity = require('../middleware/jeramisValidity')
 let router = express.Router()
 
-router.post('/api/user/create', (req, res, next) => {
+router.post('/api/user/create', (req, res) => {
     let err = checkFields(req.body, ['name', 'password'])
 
     if (err) {
@@ -32,7 +32,7 @@ router.post('/api/user/create', (req, res, next) => {
     }
 })
 
-router.post('/api/user/changePassword', jeramisValidity, (req, res, next) => {
+router.post('/api/user/changePassword', jeramisValidity, (req, res) => {
     let err = checkFields(req.body, ['id', 'password'])
 
     if (err) {

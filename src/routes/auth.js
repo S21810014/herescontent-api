@@ -3,7 +3,6 @@ const { models } = require('../sequelize')
 const kairagi = require('../kairagi')
 const bcrypt = require('bcrypt')
 const { checkFields } = require('../utils')
-const jeramisValidity = require('../middleware/jeramisValidity')
 let router = express.Router()
 
 router.post('/api/auth/login', (req, res, next) => {
