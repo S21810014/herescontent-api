@@ -64,17 +64,14 @@ router.post(
     if (err)
         res.status(400).send(err)
     else
-        models.User.findOne({where: {id: req.tokenData.id}})
-        .then(value => {
-            models.User.findOne({where: {id: req.body.id}})
-            .then(model => {
-                model.update({accessLevel: req.body.accessLevel})
-                .then(value => {
-                    res.send(req.body)
-                })
-                .catch(reason => {
-                    res.status(400).send(errorFormatter(reason))
-                })
+        models.User.findOne({where: {id: req.body.id}})
+        .then(model => {
+            model.update({accessLevel: req.body.accessLevel})
+            .then(value => {
+                res.send(req.body)
+            })
+            .catch(reason => {
+                res.status(400).send(errorFormatter(reason))
             })
         })
         .catch(reason => {
