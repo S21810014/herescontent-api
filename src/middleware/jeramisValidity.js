@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
             return res.status(401).send({
                 result: 'Invalid Access Token'
             })
-
+        
         if(retval == -1)
             return res.status(401).send({
                 result: 'Access Token expired'
