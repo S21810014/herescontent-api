@@ -20,7 +20,10 @@ router.post('/api/auth/login', (req, res, next) => {
                 if(bcrypt.compareSync(req.body.password, value.password))
                     res.send({
                         result: 'success',
-                        accessToken: kairagi.signJeramis([value.id, value.name], process.env.SECRETKEY)
+                        accessToken: kairagi.signJeramis({
+                            id: value.id,
+                            name: value.name
+                        }, process.env.SECRETKEY)
                     })
                 else
                     res.status(403).send({
@@ -34,8 +37,5 @@ router.post('/api/auth/login', (req, res, next) => {
         })
 })
 
-router.post('/api/auth/logout', (req, res, next) => {
-    let err = checkFields(req.body, ['id', 'name'])
-})
 
 module.exports = router
