@@ -4,7 +4,7 @@ module.exports = (sequelize) => {
     sequelize.define('User', {
         accessLevel: {
             allowNull: false,
-            type: DataTypes.STRING
+            type: DataTypes.INTEGER
         },
         name: {
             allowNull: false,
