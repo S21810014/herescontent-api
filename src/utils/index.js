@@ -26,7 +26,7 @@ module.exports = {
                 }
             }
             default: {
-                return error.errors[0]
+                return error
             }
         }
     }
