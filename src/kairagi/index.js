@@ -21,11 +21,14 @@ module.exports = {
             data[0] = Buffer.from(data[0], 'base64').toString('ascii')
             json = JSON.parse(data[0])
         } catch (err) {
-            callback(0, {})
+            return callback(0, {})
         }
 
+        console.log(Date.now() - json.daBekengKapan)
+
         if(Date.now() - json.daBekengKapan > expireTime)
-            callback(-1, {})
+            return callback(-1, {})
+            
 
         callback(bunaken.verify(data[0], data[1], secret) ? 1 : 0, json.identifikasi)
     }
