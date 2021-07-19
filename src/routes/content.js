@@ -2,6 +2,7 @@ const express = require('express')
 const jeramisValidity = require('../middleware/jeramisValidity')
 const { checkFields, errorFormatter } = require('../utils')
 const { models } = require('../sequelize')
+const permissionValidity = require('../middleware/permissionValidity')
 let router = express.Router()
 
 router.get('/api/content', (req, res) => {
@@ -62,39 +63,34 @@ router.post('/api/content/deleteContent', jeramisValidity, (req, res) => {
     }
 })
 
-router.post('/api/content/approveContent', jeramisValidity, (req, res) => {
-    let err = checkFields(req.body, ['id'])
+router.post(
+    '/api/content/approveContent', 
+    [
+        jeramisValidity,
+        (req, res, next) => permissionValidity(1, req, res, next),
+    ], 
+    (req, res) => {
+        let err = checkFields(req.body, ['id'])
 
-    if(err)
-        return res.status(400).send(err)
-    else {
-        models.User.findOne({where: {id: req.tokenData.id}})
-        .then(value => {
-            if(value && value.accessLevel == "MODERATOR" || value.accessLevel == "ADMIN") {
-                models.Content.findOne({where: {id: req.body.id}}).then(model => {
-                    model.update({postType: 'PUBLIC'})
-                    .then(value => {
-                        res.send(req.body)
-                    })
-                    .catch(reason => {
-                        res.status(400).send(errorFormatter(reason))
-                    })
+        if(err)
+            return res.status(400).send(err)
+        else
+            models.Content.findOne({where: {id: req.body.id}})
+            .then(model => {
+                model.update({postType: 'PUBLIC'})
+                .then(value => {
+                    res.send(req.body)
                 })
-                .catch(reason => 
-                    res.status(400).send({
-                        result: 'Cannot find post with given id'
-                    })
-                )
-            } else {
-                res.status(403).send({
-                    result: 'You don\'t have the required permission to perform that'
+                .catch(reason => {
+                    res.status(400).send(errorFormatter(reason))
                 })
-            }
-        })
-        .catch(reason => {
-            res.status(400).send(errorFormatter(reason))
-        })
+            })
+            .catch(reason => 
+                res.status(400).send({
+                    result: 'Cannot find post with given id'
+                })
+            )
     }
-})
+)
 
 module.exports = router

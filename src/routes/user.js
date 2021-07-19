@@ -3,6 +3,7 @@ const { models } = require('../sequelize')
 const { checkFields, errorFormatter } = require('../utils')
 const bcrypt = require('bcrypt')
 const jeramisValidity = require('../middleware/jeramisValidity')
+const permissionValidity = require('../middleware/permissionValidity')
 let router = express.Router()
 
 router.post('/api/user/create', (req, res) => {
@@ -51,35 +52,35 @@ router.post('/api/user/changePassword', jeramisValidity, (req, res) => {
     }
 })
 
-router.post('/api/user/promote', jeramisValidity, (req, res) => {
+router.post(
+    '/api/user/promote', 
+    [
+        jeramisValidity,
+        (req, res, next) => permissionValidity(2, req, res, next)
+    ], 
+    (req, res) => {
     let err = checkFields(req.body, ['id', 'accessLevel'])
 
     if (err)
         res.status(400).send(err)
-    else {
+    else
         models.User.findOne({where: {id: req.tokenData.id}})
         .then(value => {
-            if(value && value.accessLevel == 'ADMIN') {
-                models.User.findOne({where: {id: req.body.id}})
-                .then(model => {
-                    model.update({accessLevel: req.body.accessLevel})
-                    .then(value => {
-                        res.send(req.body)
-                    })
-                    .catch(reason => {
-                        res.status(400).send(errorFormatter(reason))
-                    })
+            models.User.findOne({where: {id: req.body.id}})
+            .then(model => {
+                model.update({accessLevel: req.body.accessLevel})
+                .then(value => {
+                    res.send(req.body)
                 })
-            } else {
-                res.status(403).send({
-                    result: 'You don\'t have the required permission to perform that'
+                .catch(reason => {
+                    res.status(400).send(errorFormatter(reason))
                 })
-            }
+            })
         })
         .catch(reason => {
             res.status(400).send(errorFormatter(reason))
         })
     }
-})
+)
 
 module.exports = router
