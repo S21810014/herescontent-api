@@ -79,4 +79,28 @@ router.post(
     }
 )
 
+router.post(
+    '/api/comment/getCommentFromPost',
+    jeramisValidity,
+    (req, res) => {
+        let err = checkFields(req.body, ['id'])
+
+        if(err)
+            return res.status(400).send(err)
+        else
+            models.Content.findOne({where: {id: req.body.id}, include: [{model: models.Comment}]})
+            .then(model => {
+                console.log(model)
+                const mapping = model.Comments.map(el => ({
+                    username: el.username,
+                    body: el.body
+                }))
+
+                console.log(mapping)
+                res.send(mapping)
+            })
+            .catch(reason => res.status(400).send(errorFormatter(reason)))
+    }
+)
+
 module.exports = router
