@@ -35,9 +35,15 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(cookieParser())
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Origin, Access-Token')
+    next()
+})
 app.use(require('./routes/content'))
 app.use(require('./routes/user'))
 app.use(require('./routes/auth'))
+app.use(require('./routes/comment'))
 
 app.get('/', (req, res) => {
     res.send("hello world!")
