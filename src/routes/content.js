@@ -93,4 +93,33 @@ router.post(
     }
 )
 
+router.post(
+    '/api/content/getContent',
+    jeramisValidity,
+    (req, res) => {
+        let err = checkFields(req.body, ['offset'])
+
+        if(err)
+            return res.status(400).send(err)
+        else {
+            models.Content.findAll({limit: 999, offset: parseInt(req.body.offset), include: [{model: models.Comment}, {model: models.User}]})
+            .then(rows => {
+                const mapping = rows.map(el => ({
+                    id: el.id,
+                    postTitle: el.title,
+                    postBody: el.body,
+                    comments: el.Comments.map(el => ({
+                        username: el.username,
+                        body: el.body,
+                    })),
+                    username: el.User.name
+                }))
+
+                console.log(mapping)
+                res.send(mapping)
+            })
+        }
+    }
+)
+
 module.exports = router
