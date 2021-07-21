@@ -7,6 +7,7 @@ const permissionValidity = require('../middleware/permissionValidity')
 let router = express.Router()
 
 router.post('/api/user/create', (req, res) => {
+    console.log(req.body)
     let err = checkFields(req.body, ['name', 'password'])
 
     if (err) {
@@ -19,7 +20,7 @@ router.post('/api/user/create', (req, res) => {
                 result: 'Username length must be at least 3 characters'
             })
 
-        req.body.accessLevel = "NORMAL"
+        req.body.accessLevel = 0
         req.body.password = bcrypt.hashSync(req.body.password, 10)
         
         models.User.create(req.body)
