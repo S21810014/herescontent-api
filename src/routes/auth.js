@@ -3,6 +3,7 @@ const { models } = require('../sequelize')
 const kairagi = require('../kairagi')
 const bcrypt = require('bcrypt')
 const { checkFields } = require('../utils')
+const jeramisValidity = require('../middleware/jeramisValidity')
 let router = express.Router()
 
 router.post('/api/auth/login', (req, res, next) => {
@@ -36,5 +37,21 @@ router.post('/api/auth/login', (req, res, next) => {
         })
 })
 
+router.get('/api/auth/checkToken', jeramisValidity, (req, res) => {
+    res.send({
+        result: 'Ok'
+    })
+})
+
+router.post('/api/auth/renewToken', jeramisValidity, (req, res) => {
+    console.log(req.body, req.tokenData)
+    res.send({
+        result: 'success',
+        accessToken: kairagi.signJeramis({
+            id: req.tokenData.id,
+            name: req.tokenData.name
+        }, process.env.SECRETKEY)
+    })
+})
 
 module.exports = router
